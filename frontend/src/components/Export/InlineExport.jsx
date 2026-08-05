@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useMascotSpec } from '../../hooks/useMascotSpec';
 import { Download, Code, X, Copy, Check, FileCode, Bot, Terminal } from 'lucide-react';
 
+import engineCodeRaw from '../Preview/MascotEngine.jsx?raw';
+
 const API_BASE = 'http://localhost:8000/api';
 
 export default function InlineExport() {
@@ -87,6 +89,7 @@ Task 3: Suggest how I can adjust the \`appearance\` properties to make it look s
 
   const tabs = [
     { id: 'react', label: 'React', icon: FileCode, description: 'React + Three.js component', code: reactCode, filename: `${cleanName}.jsx`, mimeType: 'text/javascript' },
+    { id: 'engine', label: 'Engine', icon: Code, description: 'Core 3D Engine Component (MascotEngine.jsx)', code: engineCodeRaw, filename: 'MascotEngine.jsx', mimeType: 'text/javascript' },
     { id: 'python', label: 'Python', icon: Terminal, description: 'Python mascot spec script', code: pythonCode, filename: `${cleanName.toLowerCase()}_spec.py`, mimeType: 'text/x-python' },
     { id: 'prompt', label: 'AI', icon: Bot, description: 'AI generation prompt text', code: aiPrompt, filename: null },
   ];
