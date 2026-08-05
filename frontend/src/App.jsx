@@ -541,19 +541,7 @@ export default function Mascot() {
                       <p className="text-[9px] text-foreground-muted/50 italic">— MascotForge</p>
                     </div>
 
-                    {/* Share row */}
-                    <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                      <span className="text-[10px] text-foreground-muted uppercase tracking-widest mr-1">Share on</span>
-                      <button onClick={handleDownload} title="Download Spec JSON" aria-label="Download mascot file" className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-foreground-muted hover:text-white transition-colors">
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={handleCopyCode} title="Copy Spec JSON" aria-label="Copy code to clipboard" className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-foreground-muted hover:text-white transition-colors">
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={handleShare} title="Share link" aria-label="Copy share link" className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-foreground-muted hover:text-white transition-colors">
-                        <Share2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    {/* Share row removed */}
 
                     {/* Inline Export Component */}
                     <InlineExport />
