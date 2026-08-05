@@ -371,7 +371,11 @@ export default function Mascot() {
                     )}
 
                     <div className="w-full flex-1 min-h-0">
-                      <MascotCanvas spec={spec} currentAnimation={currentAnimation} currentFaceStyle={currentFaceStyle} />
+                      <MascotCanvas 
+                        spec={spec} 
+                        currentAnimation={currentAnimation === 'idle' ? (spec?.animations?.idle || 'gentle_bob') : currentAnimation} 
+                        currentFaceStyle={currentFaceStyle} 
+                      />
                     </div>
 
                     {/* Quick Preview Action Bar */}
@@ -401,9 +405,9 @@ export default function Mascot() {
                                   setCurrentDialogue("Look at me!");
                                 }
                                 setTimeout(() => {
-                                  setCurrentAnimation(spec.animations?.idle || 'gentle_bob');
+                                  setCurrentAnimation('idle');
                                   setCurrentDialogue(null);
-                                  setCurrentFaceStyle(spec.appearance?.face_style || 'cute_dot_eyes');
+                                  setCurrentFaceStyle(null);
                                 }, 3000);
                               }}
                               className="px-2 py-1 bg-white/5 border border-white/10 hover:bg-white/12 text-white rounded-md text-xs transition-all shrink-0 active:scale-95 flex items-center gap-1"
