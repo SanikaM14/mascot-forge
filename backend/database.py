@@ -4,7 +4,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, JSON, Da
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./mascots.db")
+import tempfile
+db_path = os.path.join(tempfile.gettempdir(), "mascots.db")
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{db_path}")
 
 # For SQLite, we need to allow multithreading access
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
