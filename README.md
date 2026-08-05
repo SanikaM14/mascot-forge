@@ -29,6 +29,46 @@ MascotForge is a local-first, AI-powered utility that generates declarative, cus
 
 ---
 
+## Visual Overview and Features
+
+### Landing Page and Welcome Screen
+The main entry point of MascotForge, featuring an interactive hero section. It introduces users to the concept of declarative 3D mascots and provides immediate access to the creation pipeline without requiring user authentication.
+![Landing Page and Welcome Screen](frontend/public/Read/M1.png)
+
+### Pre-configured Mascot Gallery
+A visual library of diverse, pre-built mascot templates. This feature allows users to select a starting point (such as a robotic, crystalline, or soft toy mascot) and immediately load its geometry and behavioral traits into the live editor.
+![Pre-configured Mascot Gallery](frontend/public/Read/M2.png)
+
+### Profile and Metadata Editor
+The profile configuration tab where users define the core identity of their mascot. This includes assigning a name, specific personality tags, and a unique voice style, which dictate how the AI generates dialogues.
+![Profile and Metadata Editor](frontend/public/Read/M3.png)
+
+### 3D Appearance and Material Customization
+The core visual editor utilizing React Three Fiber. Users can manipulate body shapes, face styles, and apply complex PBR materials (like glass, neon, or clay) while seeing changes reflected instantly on the interactive 3D canvas.
+![3D Appearance and Material Customization](frontend/public/Read/M4.png)
+
+### Dialogue and Speech Management
+A dedicated interface for managing the mascot's conversational responses. Users can define exact string outputs for specific web events, giving the character a custom script for interactions like successful form submissions or network errors.
+![Dialogue and Speech Management](frontend/public/Read/M5.png)
+
+### Event Triggers and Animation Behaviors
+The behavioral logic control center. This panel allows users to bind specific DOM events (like scrolling or hovering) to 3D animations and dialogues, creating a fully reactive user experience.
+![Event Triggers and Animation Behaviors](frontend/public/Read/M6.png)
+
+### AI-Powered Natural Language Refinement
+The "AI Refine" chat interface powered by Llama 3.1. Users can type natural language requests to modify their mascot, which the AI processes into strict JSON schema updates applied instantly to the 3D model.
+![AI-Powered Natural Language Refinement](frontend/public/Read/M7.png)
+
+### Client-Side React Component Export
+The production export interface. It dynamically generates a ready-to-use React (.jsx) component containing the user's specific mascot configuration, allowing for immediate copy-pasting into external codebases.
+![Client-Side React Component Export](frontend/public/Read/M8.png)
+
+### Core Engine and Python Specification Export
+The advanced export tooling. This provides the raw Python dictionary specifications for backend integration and the raw MascotEngine source code, ensuring developers have full access to the rendering pipeline.
+![Core Engine and Python Specification Export](frontend/public/Read/M9.png)
+
+---
+
 ## Architecture
 
 ```mermaid
