@@ -1,13 +1,10 @@
-# MascotForge - AI-Powered Interactive 3D Mascot Generator
+# MascotForge
 
-**Role:** AI Developer / Frontend Engineer  
-**Live Demo:** [Insert Vercel/Netlify Link] | **Repository:** [Insert GitHub Link]
-
-MascotForge is a full-stack, AI-driven web application that allows users to generate, customize, and deploy interactive 3D mascots for their websites. It bridges the gap between natural language processing and declarative 3D graphics, leveraging Large Language Models to map user intent directly into a rigid 3D spec schema.
+MascotForge is a local-first, AI-powered utility that generates declarative, customizable 3D mascots for React applications using Llama 3.1 and React Three Fiber. It empowers developers to instantly design, animate, and export production-ready interactive 3D components directly into their codebases in seconds.
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 ### 1. Agentic AI Refinement ("AI X-Ray" Mode)
 - **Feature:** A dedicated "AI Refine" chat interface allows users to naturally describe changes to their mascot (e.g., "Make it look like a robot").
@@ -32,7 +29,7 @@ MascotForge is a full-stack, AI-driven web application that allows users to gene
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
@@ -57,7 +54,7 @@ flowchart TD
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend & 3D
 - **React.js (Vite):** High-performance UI rendering and state management.
@@ -73,7 +70,7 @@ flowchart TD
 
 ---
 
-## 📂 Folder Structure
+## Folder Structure
 
 ```text
 mascot-forge/
@@ -106,7 +103,7 @@ mascot-forge/
 
 ---
 
-## 💡 Technical Challenges Overcome
+## Technical Challenges Overcome
 
 1. **JSON Schema Adherence:** LLMs often struggle with strict structural requirements. I solved this by engineering a highly constrained system prompt combined with structured output formatting, guaranteeing that the AI's response perfectly matches the `MascotSpec` interface expected by the 3D renderer.
 2. **3D Performance:** Rendering multiple dynamic materials and lights in the browser can be heavy. I optimized `MascotEngine.jsx` by reusing geometries where possible and leveraging `useFrame` for procedural animations instead of heavy keyframe data.
@@ -114,7 +111,7 @@ mascot-forge/
 
 ---
 
-## 🔮 Future Scope
+## Future Scope
 
 - **Multi-agent mascot refinement:** Specialized agents for text generation vs. 3D modeling.
 - **Voice interaction:** Real-time WebRTC audio processing to talk with the mascot.
