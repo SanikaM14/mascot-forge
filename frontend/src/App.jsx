@@ -19,7 +19,7 @@ function App() {
   const [uploadedPreview, setUploadedPreview] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const { spec, setSpec, updateAppearance } = useMascotSpec();
+  const { spec, setSpec, updateAppearance, previewAnimation } = useMascotSpec();
   const { currentAnimation, currentDialogue, currentFaceStyle, setCurrentAnimation, setCurrentDialogue, setCurrentFaceStyle } = useMascotEvents(spec);
 
   const [showArchModal, setShowArchModal] = useState(false);
@@ -373,7 +373,7 @@ export default function Mascot() {
                     <div className="w-full flex-1 min-h-0">
                       <MascotCanvas 
                         spec={spec} 
-                        currentAnimation={currentAnimation === 'idle' ? (spec?.animations?.idle || 'gentle_bob') : currentAnimation} 
+                        currentAnimation={previewAnimation || (currentAnimation === 'idle' ? (spec?.animations?.idle || 'gentle_bob') : currentAnimation)} 
                         currentFaceStyle={currentFaceStyle} 
                       />
                     </div>

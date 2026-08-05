@@ -41,7 +41,7 @@ const DIALOGUE_KEY_OPTIONS = [
 ];
 
 export default function BehaviorsTab() {
-  const { spec, setSpec } = useMascotSpec();
+  const { spec, setSpec, setPreviewAnimation } = useMascotSpec();
   const { triggers } = spec;
 
   // Add-trigger form state
@@ -54,6 +54,13 @@ export default function BehaviorsTab() {
     delay_ms: '',
     threshold: '',
   });
+
+  const handlePreview = (anim) => {
+    if (setPreviewAnimation) {
+      setPreviewAnimation(anim);
+      setTimeout(() => setPreviewAnimation(null), 2500);
+    }
+  };
 
   const removeTrigger = (index) => {
     const updated = [...triggers];
@@ -75,6 +82,9 @@ export default function BehaviorsTab() {
     }
     
     setSpec({ ...spec, triggers: updated });
+    
+    // Preview if animation or face changed
+    if (field === 'animation') handlePreview(value);
   };
 
   const handleAddTrigger = () => {
@@ -85,11 +95,17 @@ export default function BehaviorsTab() {
     if (!trigger.face_style) delete trigger.face_style;
     setSpec({ ...spec, triggers: [...triggers, trigger] });
     setShowAddForm(false);
+    handlePreview(trigger.animation);
     setNewTrigger({ event: 'page_load', animation: 'wave', dialogue: 'on_load', face_style: '', delay_ms: '', threshold: '' });
   };
 
   const handleNewTriggerChange = (key, value) => {
     setNewTrigger(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleDefaultAnimationChange = (role, value) => {
+    setSpec({ ...spec, animations: { ...spec.animations, [role]: value }});
+    handlePreview(value);
   };
 
   return (
@@ -104,7 +120,7 @@ export default function BehaviorsTab() {
             <select
               className="input-field w-full text-xs py-1.5 px-2 bg-black/40"
               value={spec.animations?.idle || ''}
-              onChange={(e) => setSpec({ ...spec, animations: { ...spec.animations, idle: e.target.value }})}
+              onChange={(e) => handleDefaultAnimationChange('idle', e.target.value)}
             >
               <option value="">Default</option>
               {ANIMATION_OPTIONS.map(anim => <option key={anim} value={anim}>{anim.replace(/_/g, ' ')}</option>)}
@@ -115,7 +131,7 @@ export default function BehaviorsTab() {
             <select
               className="input-field w-full text-xs py-1.5 px-2 bg-black/40"
               value={spec.animations?.greeting || ''}
-              onChange={(e) => setSpec({ ...spec, animations: { ...spec.animations, greeting: e.target.value }})}
+              onChange={(e) => handleDefaultAnimationChange('greeting', e.target.value)}
             >
               <option value="">Default</option>
               {ANIMATION_OPTIONS.map(anim => <option key={anim} value={anim}>{anim.replace(/_/g, ' ')}</option>)}
@@ -126,7 +142,7 @@ export default function BehaviorsTab() {
             <select
               className="input-field w-full text-xs py-1.5 px-2 bg-black/40"
               value={spec.animations?.positive_reaction || ''}
-              onChange={(e) => setSpec({ ...spec, animations: { ...spec.animations, positive_reaction: e.target.value }})}
+              onChange={(e) => handleDefaultAnimationChange('positive_reaction', e.target.value)}
             >
               <option value="">Default</option>
               {ANIMATION_OPTIONS.map(anim => <option key={anim} value={anim}>{anim.replace(/_/g, ' ')}</option>)}
@@ -137,7 +153,7 @@ export default function BehaviorsTab() {
             <select
               className="input-field w-full text-xs py-1.5 px-2 bg-black/40"
               value={spec.animations?.negative_reaction || ''}
-              onChange={(e) => setSpec({ ...spec, animations: { ...spec.animations, negative_reaction: e.target.value }})}
+              onChange={(e) => handleDefaultAnimationChange('negative_reaction', e.target.value)}
             >
               <option value="">Default</option>
               {ANIMATION_OPTIONS.map(anim => <option key={anim} value={anim}>{anim.replace(/_/g, ' ')}</option>)}
@@ -148,7 +164,7 @@ export default function BehaviorsTab() {
             <select
               className="input-field w-full text-xs py-1.5 px-2 bg-black/40"
               value={spec.animations?.thinking || ''}
-              onChange={(e) => setSpec({ ...spec, animations: { ...spec.animations, thinking: e.target.value }})}
+              onChange={(e) => handleDefaultAnimationChange('thinking', e.target.value)}
             >
               <option value="">Default</option>
               {ANIMATION_OPTIONS.map(anim => <option key={anim} value={anim}>{anim.replace(/_/g, ' ')}</option>)}

@@ -96,6 +96,8 @@ export const useMascotSpec = create((set) => ({
   spec: null,
   isGenerating: false,
   error: null,
+  previewAnimation: null,
+  setPreviewAnimation: (anim) => set({ previewAnimation: anim }),
   setSpec: (newSpec) => set({ spec: normalizeSpec(newSpec) }),
   updateAppearance: (key, value) => 
     set((state) => ({

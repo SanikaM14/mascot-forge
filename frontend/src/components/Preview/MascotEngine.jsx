@@ -25,6 +25,8 @@ export default function MascotEngine({ spec, currentAnimation, currentFaceStyle 
       case 'shake':      group.current.rotation.z = Math.sin(t * 8) * 0.15; break;
       case 'pulse':      { const s = 1 + Math.sin(t * 3) * 0.08; group.current.scale.set(s, s, s); break; }
       case 'wiggle':     group.current.rotation.z = Math.sin(t * 6) * 0.1; group.current.position.y = Math.sin(t * 3) * 0.05; break;
+      case 'blink':      group.current.position.y = Math.sin(t * 1) * 0.04; break;
+      case 'idle_look':  group.current.rotation.y = Math.sin(t * 1.5) * 0.2; break;
       default:           group.current.position.y = Math.sin(t * 2) * 0.08;
     }
   });
