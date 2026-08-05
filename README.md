@@ -159,3 +159,11 @@ mascot-forge/
 - **Blender export:** `.obj`/`.gltf` compilation for external animation software.
 - **Multi-mascot collaboration:** Rendering multiple interactive agents on the same canvas.
 - **Animation timeline editor:** Keyframe-level UI for users to design bespoke animations beyond the built-in library.
+
+---
+
+## License & Credits
+
+This project is licensed under the [MIT License](LICENSE).
+
+**All creativity, UI/UX conceptualization, and design credits for MascotForge belong to SANIKA MORDEKAR.**
