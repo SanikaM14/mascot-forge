@@ -7,10 +7,14 @@ from pydantic import ValidationError
 from dotenv import load_dotenv
 import groq
 
-from models import MascotSpec
+from models import MascotSpec, GenerateMascotRequest, RefineMascotRequest, ExportRequest, GeneratePromptRequest, AuthRequest, SaveProjectRequest
 from database import init_db, get_db, User, Project
 from sqlalchemy.orm import Session
 from export_templates import generate_jsx_export, generate_python_export
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -23,7 +27,7 @@ def startup_db_client():
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,  # Fixed CORS vulnerability: cannot use True with origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -109,8 +113,18 @@ def get_groq_client():
 @app.post("/api/analyze-screenshot")
 async def analyze_screenshot(image: UploadFile = File(...)):
     g_client = get_groq_client()
+    
+    # Input validation: MIME type check
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
+    if image.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG, PNG, and WebP are allowed.")
+        
     try:
+        # Secure file read with size limit (max 5MB)
         contents = await image.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="File too large. Maximum size is 5MB.")
+            
         base64_image = base64.b64encode(contents).decode("utf-8")
         image_url = f"data:{image.content_type};base64,{base64_image}"
 
@@ -133,15 +147,18 @@ async def analyze_screenshot(image: UploadFile = File(...)):
         
         extracted_style = json.loads(response.choices[0].message.content)
         return {"extracted_style": extracted_style}
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in analyze_screenshot: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/api/generate-mascot", response_model=dict)
-async def generate_mascot(payload: dict):
+async def generate_mascot(payload: GenerateMascotRequest):
     g_client = get_groq_client()
-    description = payload.get("description", "")
-    extracted_style = payload.get("extracted_style", {})
+    description = payload.description
+    extracted_style = payload.extracted_style or {}
 
     user_message = f"Website description: {description}\n"
     if extracted_style:
@@ -177,9 +194,11 @@ async def generate_mascot(payload: dict):
             spec = MascotSpec(**data)
             return {"spec": spec.model_dump()}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Generation failed after retry: {str(e)}")
+            logger.error(f"Generation failed after retry: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error during mascot generation")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in generate_mascot: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 def deep_merge(dict1, dict2):
@@ -192,10 +211,10 @@ def deep_merge(dict1, dict2):
     return dict1
 
 @app.post("/api/refine-mascot")
-async def refine_mascot(payload: dict):
+async def refine_mascot(payload: RefineMascotRequest):
     g_client = get_groq_client()
-    current_spec = payload.get("current_spec")
-    instruction = payload.get("instruction")
+    current_spec = payload.current_spec
+    instruction = payload.instruction
 
     prompt = f"""
     Update the following MascotSpec based on the user instruction. Return the COMPLETE updated JSON object matching the schema exactly.
@@ -233,14 +252,16 @@ async def refine_mascot(payload: dict):
             spec = MascotSpec(**merged)
             return {"spec": spec.model_dump()}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Refinement failed after retry: {str(e)}")
+            logger.error(f"Refinement failed after retry: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error during refinement")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in refine_mascot: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/api/export")
-async def export_mascot(payload: dict):
-    spec = payload.get("spec", {})
-    format_type = payload.get("format", "jsx")
+async def export_mascot(payload: ExportRequest):
+    spec = payload.spec
+    format_type = payload.format
     name = spec.get("meta", {}).get("name", "Mascot")
     safe_name = "".join(c for c in name if c.isalnum())
 
@@ -255,9 +276,9 @@ async def export_mascot(payload: dict):
 
 
 @app.post("/api/generate-prompt")
-async def generate_prompt_endpoint(payload: dict):
+async def generate_prompt_endpoint(payload: GeneratePromptRequest):
     """Convert a mascot spec into a human-readable AI prompt to recreate it in any AI agent."""
-    spec = payload.get("spec", {})
+    spec = payload.spec
     meta = spec.get("meta", {})
     appearance = spec.get("appearance", {})
     dialogues = spec.get("dialogues", {})
@@ -280,7 +301,8 @@ Start with: 'Create a 3D website mascot with these characteristics:'. No JSON, n
         )
         prompt_text = response.choices[0].message.content
         return {"prompt": prompt_text}
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error in generate_prompt, using fallback: {e}", exc_info=True)
         # Fallback manual prompt
         tags = ", ".join(meta.get("personality_tags", ["friendly"]))
         trigger_desc = ". ".join([
@@ -304,10 +326,8 @@ Render as an animated 3D mascot suitable for embedding on a website."""
 # Database Endpoints
 
 @app.post("/api/auth/register-login")
-async def register_login(payload: dict, db: Session = Depends(get_db)):
-    username = payload.get("username", "").strip()
-    if not username:
-        raise HTTPException(status_code=400, detail="Username is required")
+async def register_login(payload: AuthRequest, db: Session = Depends(get_db)):
+    username = payload.username.strip()
     
     user = db.query(User).filter(User.username == username).first()
     if not user:
@@ -319,15 +339,12 @@ async def register_login(payload: dict, db: Session = Depends(get_db)):
     return {"id": user.id, "username": user.username}
 
 @app.post("/api/projects")
-async def save_project(payload: dict, db: Session = Depends(get_db)):
-    user_id = payload.get("user_id")
-    name = payload.get("name", "Unnamed Mascot")
-    spec_data = payload.get("spec")
-    screenshot_url = payload.get("screenshot_url")
-    is_public = payload.get("is_public", False)
-
-    if not user_id or not spec_data:
-        raise HTTPException(status_code=400, detail="User ID and Mascot Spec are required")
+async def save_project(payload: SaveProjectRequest, db: Session = Depends(get_db)):
+    user_id = payload.user_id
+    name = payload.name
+    spec_data = payload.spec
+    screenshot_url = payload.screenshot_url
+    is_public = payload.is_public
 
     project = Project(
         user_id=user_id,

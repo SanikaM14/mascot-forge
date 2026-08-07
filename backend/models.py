@@ -60,4 +60,28 @@ class MascotSpec(BaseModel):
     triggers: List[MascotTrigger] = Field(default_factory=list)
     ai_suggestion: Optional[str] = None
 
+# Request Payloads
+class GenerateMascotRequest(BaseModel):
+    description: str = Field(default="", max_length=2000)
+    extracted_style: Optional[dict] = None
 
+class RefineMascotRequest(BaseModel):
+    current_spec: dict
+    instruction: str = Field(..., min_length=1, max_length=1000)
+
+class ExportRequest(BaseModel):
+    spec: dict
+    format: str = Field(default="jsx", pattern="^(jsx|python)$")
+
+class GeneratePromptRequest(BaseModel):
+    spec: dict
+
+class AuthRequest(BaseModel):
+    username: str = Field(..., min_length=2, max_length=50, pattern="^[a-zA-Z0-9_.-]+$")
+
+class SaveProjectRequest(BaseModel):
+    user_id: int
+    name: str = Field(default="Unnamed Mascot", max_length=100)
+    spec: dict
+    screenshot_url: Optional[str] = Field(None, max_length=5000)
+    is_public: bool = False
